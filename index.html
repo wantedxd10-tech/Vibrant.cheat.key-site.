@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIBRANT CHEATS - Admin Control</title>
+    <style>
+        :root {
+            --primary: #f01818;
+            --bg: #0a0a0a;
+            --card-bg: #161616;
+            --text: #ffffff;
+            --secondary: #222;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            border-bottom: 2px solid var(--primary);
+            margin-bottom: 30px;
+        }
+
+        h1 { color: var(--primary); text-transform: uppercase; letter-spacing: 3px; }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+
+        /* Form Styling */
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-size: 13px; color: #888; }
+        
+        select, input {
+            width: 100%;
+            padding: 10px;
+            background: var(--secondary);
+            border: 1px solid #444;
+            color: white;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .btn:hover { background: #c41414; transform: scale(1.02); }
+
+        /* Table Styling */
+        .table-container {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 15px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background: var(--primary);
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #333;
+        }
+
+        .status-active { color: #00ff00; font-weight: bold; }
+        .hwid-text { color: #aaa; font-family: monospace; font-size: 11px; }
+
+        .key-display {
+            margin-top: 15px;
+            padding: 10px;
+            background: #000;
+            border: 1px dashed var(--primary);
+            text-align: center;
+            display: none;
+        }
+
+        #generated-key { color: var(--primary); font-weight: bold; font-size: 18px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>VIBRANT CHEATS ADMIN</h1>
+        <p>Manage Keys, Validity & HWID Binding</p>
+    </div>
+
+    <div class="main-grid">
+        <div class="card">
+            <h3 style="margin-top:0;">Key Generator</h3>
+            <div class="form-group">
+                <label>Validity Plan</label>
+                <select id="validity">
+                    <option value="1">1 Day</option>
+                    <option value="7">7 Days</option>
+                    <option value="30">30 Days</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Device Limit</label>
+                <input type="number" id="devices" value="1" min="1">
+            </div>
+            <button class="btn" onclick="generateKey()">GENERATE KEY</button>
+
+            <div id="key-result" class="key-display">
+                <span id="generated-key"></span>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <h3 style="margin-top:0;">Active Keys & HWID Logs</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>License Key</th>
+                        <th>Plan</th>
+                        <th>Device HWID</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="key-table-body">
+                    <tr>
+                        <td>VIBRANT-8J2K-L9P1</td>
+                        <td>30 Days</td>
+                        <td class="hwid-text">8492-AX82-QPP9-Z01L</td>
+                        <td class="status-active">LOGGED</td>
+                    </tr>
+                    <tr>
+                        <td>VIBRANT-4M0X-R3W9</td>
+                        <td>7 Days</td>
+                        <td class="hwid-text">--- UNUSED ---</td>
+                        <td style="color: yellow;">PENDING</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function generateKey() {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let randomStr = "";
+        for (let i = 0; i < 12; i++) {
+            randomStr += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        
+        // Final Key Format
+        const finalKey = "VIBRANT-" + randomStr;
+        
+        // UI Update
+        document.getElementById("generated-key").innerText = finalKey;
+        document.getElementById("key-result").style.display = "block";
+
+        // Add to Table (Simulation)
+        const table = document.getElementById("key-table-body");
+        const days = document.getElementById("validity").value;
+        const newRow = `
+            <tr>
+                <td>${finalKey}</td>
+                <td>${days} Days</td>
+                <td class="hwid-text">--- WAITING ---</td>
+                <td style="color: yellow;">PENDING</td>
+            </tr>
+        `;
+        table.innerHTML = newRow + table.innerHTML;
+    }
+</script>
+
+</body>
+</html>
