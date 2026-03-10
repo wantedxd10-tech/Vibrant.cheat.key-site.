@@ -21,10 +21,7 @@
             padding: 20px;
         }
 
-        .container {
-            max-width: 900px;
-            margin: auto;
-        }
+        .container { max-width: 900px; margin: auto; }
 
         .header {
             text-align: center;
@@ -41,7 +38,6 @@
             gap: 20px;
         }
 
-        /* Form Styling */
         .card {
             background: var(--card-bg);
             padding: 20px;
@@ -76,7 +72,6 @@
 
         .btn:hover { background: #c41414; transform: scale(1.02); }
 
-        /* Table Styling */
         .table-container {
             background: var(--card-bg);
             border-radius: 10px;
@@ -84,11 +79,7 @@
             overflow-x: auto;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
 
         th {
             background: var(--primary);
@@ -97,10 +88,7 @@
             text-align: left;
         }
 
-        td {
-            padding: 10px;
-            border-bottom: 1px solid #333;
-        }
+        td { padding: 10px; border-bottom: 1px solid #333; }
 
         .status-active { color: #00ff00; font-weight: bold; }
         .hwid-text { color: #aaa; font-family: monospace; font-size: 11px; }
@@ -140,7 +128,7 @@
                 <label>Device Limit</label>
                 <input type="number" id="devices" value="1" min="1">
             </div>
-            <button class="btn" onclick="generateKey()">GENERATE KEY</button>
+            <button class="btn" id="genBtn" onclick="generateKey()">GENERATE KEY</button>
 
             <div id="key-result" class="key-display">
                 <span id="generated-key"></span>
@@ -159,51 +147,58 @@
                     </tr>
                 </thead>
                 <tbody id="key-table-body">
-                    <tr>
-                        <td>VIBRANT-8J2K-L9P1</td>
-                        <td>30 Days</td>
-                        <td class="hwid-text">8492-AX82-QPP9-Z01L</td>
-                        <td class="status-active">LOGGED</td>
-                    </tr>
-                    <tr>
-                        <td>VIBRANT-4M0X-R3W9</td>
-                        <td>7 Days</td>
-                        <td class="hwid-text">--- UNUSED ---</td>
-                        <td style="color: yellow;">PENDING</td>
-                    </tr>
-                </tbody>
+                    </tbody>
             </table>
         </div>
     </div>
 </div>
 
 <script>
+    // --- APNE PHP SERVER KA URL YAHAN DAALEIN ---
+    const API_URL = "https://your-hosting-name.000webhostapp.com"; 
+
     function generateKey() {
+        const btn = document.getElementById("genBtn");
         const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         let randomStr = "";
         for (let i = 0; i < 12; i++) {
             randomStr += chars.charAt(Math.floor(Math.random() * chars.length));
         }
         
-        // Final Key Format
         const finalKey = "VIBRANT-" + randomStr;
-        
-        // UI Update
-        document.getElementById("generated-key").innerText = finalKey;
-        document.getElementById("key-result").style.display = "block";
-
-        // Add to Table (Simulation)
-        const table = document.getElementById("key-table-body");
         const days = document.getElementById("validity").value;
-        const newRow = `
-            <tr>
-                <td>${finalKey}</td>
-                <td>${days} Days</td>
-                <td class="hwid-text">--- WAITING ---</td>
-                <td style="color: yellow;">PENDING</td>
-            </tr>
-        `;
-        table.innerHTML = newRow + table.innerHTML;
+        const deviceLimit = document.getElementById("devices").value;
+
+        btn.innerText = "SAVING...";
+        btn.disabled = true;
+
+        // --- DATABASE MEIN SAVE KARNE KA LOGIC ---
+        fetch(`${API_URL}/save_key.php?key=${finalKey}&days=${days}&devices=${deviceLimit}`)
+        .then(response => {
+            // UI Update
+            document.getElementById("generated-key").innerText = finalKey;
+            document.getElementById("key-result").style.display = "block";
+
+            // Add to Table
+            const table = document.getElementById("key-table-body");
+            const newRow = `
+                <tr>
+                    <td>${finalKey}</td>
+                    <td>${days} Days</td>
+                    <td class="hwid-text">--- WAITING ---</td>
+                    <td style="color: yellow;">PENDING</td>
+                </tr>
+            `;
+            table.innerHTML = newRow + table.innerHTML;
+            
+            btn.innerText = "GENERATE KEY";
+            btn.disabled = false;
+        })
+        .catch(err => {
+            alert("Server Error! Check if API_URL is correct.");
+            btn.innerText = "GENERATE KEY";
+            btn.disabled = false;
+        });
     }
 </script>
 
